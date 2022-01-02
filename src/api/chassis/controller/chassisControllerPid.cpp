@@ -18,7 +18,8 @@ namespace okapi
       std::unique_ptr<IterativePosPIDController> iangleController,
       const AbstractMotor::GearsetRatioPair &igearset,
       const ChassisScales &iscales,
-      std::shared_ptr<Logger> ilogger, double slewdiff)
+      std::shared_ptr<Logger> ilogger,
+      double slewdiff)
       : logger(std::move(ilogger)),
         chassisModel(std::move(ichassisModel)),
         timeUtil(std::move(itimeUtil)),
@@ -61,9 +62,9 @@ namespace okapi
     while (!dtorCalled.load(std::memory_order_acquire) && !task->notifyTake(0))
     {
       /**
-       * doneLooping is set to false by moveDistanceAsync and turnAngleAsync and then set to true by
-       * waitUntilSettled
-       */
+     * doneLooping is set to false by moveDistanceAsync and turnAngleAsync and then set to true by
+     * waitUntilSettled
+     */
       if (doneLooping.load(std::memory_order_acquire))
       {
         doneLoopingSeen.store(true, std::memory_order_release);
@@ -104,16 +105,42 @@ namespace okapi
           angleChange = (encVals[0] - encVals[1]) / 2.0;
 
           turnPid->step(angleChange);
-
-          if (velocityMode)
+          switch (swingg)
           {
-            chassisModel->driveVector(0, slewR->step(turnPid->getOutput()));
-          }
-          else
-          {
-            chassisModel->driveVectorVoltage(0, turnPid->getOutput());
-          }
+          case swing::none:
+            if (velocityMode)
+            {
+              chassisModel->driveVector(0, slewR->step(turnPid->getOutput()));
+            }
+            else
+            {
+              chassisModel->driveVectorVoltage(0, turnPid->getOutput());
+            }
 
+            break;
+          case swing::left:
+            if (velocityMode)
+            {
+              chassisModel->left(slewR->step(turnPid->getOutput()));
+            }
+            else
+            {
+              printf("AAAAAAAVELOCITYMODE\n");
+            }
+
+            break;
+          case swing::right:
+            if (velocityMode)
+            {
+              chassisModel->right(-slewR->step(turnPid->getOutput()));
+            }
+            else
+            {
+              printf("AAAAAAAVELOCITYMODE\n");
+            }
+
+            break;
+          };
           break;
 
         default:
@@ -142,7 +169,8 @@ namespace okapi
   void ChassisControllerPID::moveDistanceAsync(const QLength itarget)
   {
     LOG_INFO("ChassisControllerPID: moving " + std::to_string(itarget.convert(meter)) + " meters");
-    LOG_DEBUG("ChassisControllerPID: straight " + std::to_string(scales.straight) + " ratio " + std::to_string(gearsetRatioPair.ratio));
+    LOG_DEBUG("ChassisControllerPID: straight " + std::to_string(scales.straight) + " ratio " +
+              std::to_string(gearsetRatioPair.ratio));
 
     distancePid->reset();
     anglePid->reset();
@@ -179,18 +207,23 @@ namespace okapi
     // Divide by straightScale so the final result turns back into motor ticks
     moveDistance((itarget / scales.straight) * meter);
   }
-
   void ChassisControllerPID::turnAngleAsync(const QAngle idegTarget)
+  {
+    turnAngleAsync(idegTarget, swing::none);
+  }
+  void ChassisControllerPID::turnAngleAsync(const QAngle idegTarget, swing s)
   {
     LOG_INFO("ChassisControllerPID: turning " + std::to_string(idegTarget.convert(degree)) +
              " degrees");
-    LOG_DEBUG("ChassisControllerPID: scales.turn " + std::to_string(scales.turn) + " ratio " + std::to_string(gearsetRatioPair.ratio));
+    LOG_DEBUG("ChassisControllerPID: scales.turn " + std::to_string(scales.turn) + " ratio " +
+              std::to_string(gearsetRatioPair.ratio));
 
     turnPid->reset();
     turnPid->flipDisable(false);
     distancePid->flipDisable(true);
     anglePid->flipDisable(true);
     mode = angle;
+    swingg = s;
 
     const double newTarget =
         idegTarget.convert(degree) * scales.turn * gearsetRatioPair.ratio * boolToSign(normalTurns);
@@ -212,6 +245,12 @@ namespace okapi
   void ChassisControllerPID::turnAngle(const QAngle idegTarget)
   {
     turnAngleAsync(idegTarget);
+    waitUntilSettled();
+  }
+
+  void ChassisControllerPID::turnAngle(const QAngle idegTarget, swing s)
+  {
+    turnAngleAsync(idegTarget, s);
     waitUntilSettled();
   }
 

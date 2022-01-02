@@ -18,6 +18,8 @@
 namespace okapi {
 class ChassisControllerPID : public ChassisController {
   public:
+
+  enum class swing { none, left, right };
   /**
    * ChassisController using PID control. Puts the motors into encoder count units. Throws a
    * `std::invalid_argument` exception if the gear ratio is zero.
@@ -102,6 +104,8 @@ class ChassisControllerPID : public ChassisController {
    */
   void turnAngle(QAngle idegTarget) override;
 
+  void turnAngle(QAngle idegTarget, swing s);
+
   /**
    * Turns the robot clockwise in place (using closed-loop control).
    *
@@ -120,6 +124,7 @@ class ChassisControllerPID : public ChassisController {
    * @param idegTarget angle to turn for
    */
   void turnAngleAsync(QAngle idegTarget) override;
+  void turnAngleAsync(QAngle idegTarget, swing s) ;
 
   /**
    * Sets the target angle for the robot to turn clockwise in place (using closed-loop control).
@@ -229,6 +234,7 @@ class ChassisControllerPID : public ChassisController {
    */
   ChassisModel &model() override;
 
+
   protected:
   std::shared_ptr<Logger> logger;
   bool normalTurns{true};
@@ -272,6 +278,7 @@ class ChassisControllerPID : public ChassisController {
 
   typedef enum { distance, angle, none } modeType;
   modeType mode{none};
+  swing swingg {swing::none};
 
   CrossplatformThread *task{nullptr};
 };
