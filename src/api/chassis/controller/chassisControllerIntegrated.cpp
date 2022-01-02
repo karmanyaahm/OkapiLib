@@ -68,6 +68,8 @@ void ChassisControllerIntegrated::moveRawAsync(const double itarget) {
   moveDistanceAsync((itarget / scales.straight) * meter);
 }
 
+void ChassisControllerIntegrated::turnAngle(const QAngle idegTarget, swing s) {
+}
 void ChassisControllerIntegrated::turnAngle(const QAngle idegTarget) {
   turnAngleAsync(idegTarget);
   waitUntilSettled();
@@ -78,6 +80,9 @@ void ChassisControllerIntegrated::turnRaw(const double idegTarget) {
   turnAngle((idegTarget / scales.turn) * degree);
 }
 
+void ChassisControllerIntegrated::turnAngleAsync(const QAngle idegTarget, swing s) {
+
+}
 void ChassisControllerIntegrated::turnAngleAsync(const QAngle idegTarget) {
   LOG_INFO("ChassisControllerIntegrated: turning " + std::to_string(idegTarget.convert(degree)) +
            " degrees");

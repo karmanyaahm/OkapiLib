@@ -132,7 +132,7 @@ namespace okapi
           case swing::right:
             if (velocityMode)
             {
-              chassisModel->right(-slewR->step(turnPid->getOutput()));
+              chassisModel->right(slewR->step(turnPid->getOutput()));
             }
             else
             {

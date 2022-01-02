@@ -102,6 +102,7 @@ class DefaultOdomChassisController : public OdomChassisController {
    * This delegates to the input ChassisController.
    */
   void turnAngle(QAngle idegTarget) override;
+  void turnAngle(QAngle idegTarget, swing s);
 
   /**
    * This delegates to the input ChassisController.
@@ -112,6 +113,7 @@ class DefaultOdomChassisController : public OdomChassisController {
    * This delegates to the input ChassisController.
    */
   void turnAngleAsync(QAngle idegTarget) override;
+  void turnAngleAsync(QAngle idegTarget, swing s);
 
   /**
    * This delegates to the input ChassisController.

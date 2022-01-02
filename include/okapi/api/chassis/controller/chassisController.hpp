@@ -16,6 +16,7 @@
 namespace okapi {
 class ChassisController {
   public:
+  enum class swing { none, left, right };
   /**
    * A ChassisController adds a closed-loop layer on top of a ChassisModel. moveDistance and
    * turnAngle both use closed-loop control to move the robot. There are passthrough functions for
@@ -61,7 +62,7 @@ class ChassisController {
    * @param idegTarget angle to turn for
    */
   virtual void turnAngle(QAngle idegTarget) = 0;
-
+  virtual void turnAngle(QAngle idegTarget, swing s) = 0;
   /**
    * Turns the robot clockwise in place (using closed-loop control).
    *
@@ -75,6 +76,7 @@ class ChassisController {
    * @param idegTarget angle to turn for
    */
   virtual void turnAngleAsync(QAngle idegTarget) = 0;
+  virtual void turnAngleAsync(QAngle idegTarget, swing s) = 0;
 
   /**
    * Sets the target angle for the robot to turn clockwise in place (using closed-loop control).

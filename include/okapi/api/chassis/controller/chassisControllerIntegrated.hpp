@@ -87,6 +87,7 @@ class ChassisControllerIntegrated : public ChassisController {
    * @param idegTarget angle to turn for
    */
   void turnAngle(QAngle idegTarget) override;
+  void turnAngle(QAngle idegTarget, swing s) override;
 
   /**
    * Turns the robot clockwise in place (using closed-loop control).
@@ -106,6 +107,7 @@ class ChassisControllerIntegrated : public ChassisController {
    * @param idegTarget angle to turn for
    */
   void turnAngleAsync(QAngle idegTarget) override;
+  void turnAngleAsync(QAngle idegTarget, swing s) override;
 
   /**
    * Sets the target angle for the robot to turn clockwise in place (using closed-loop control).

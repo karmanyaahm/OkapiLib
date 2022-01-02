@@ -19,7 +19,6 @@ namespace okapi {
 class ChassisControllerPID : public ChassisController {
   public:
 
-  enum class swing { none, left, right };
   /**
    * ChassisController using PID control. Puts the motors into encoder count units. Throws a
    * `std::invalid_argument` exception if the gear ratio is zero.
