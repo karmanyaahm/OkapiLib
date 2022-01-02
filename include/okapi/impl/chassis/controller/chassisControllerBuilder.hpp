@@ -329,6 +329,9 @@ class ChassisControllerBuilder {
    */
   ChassisControllerBuilder &withMaxVelocity(double imaxVelocity);
 
+  ChassisControllerBuilder &withSlewRate(double irate);
+
+
   /**
    * Sets the max voltage. The default is `12000`.
    *
@@ -492,6 +495,7 @@ class ChassisControllerBuilder {
   double maxVoltage{12000};
 
   bool isParentedToCurrentTask{true};
+  double slewRate = MAXFLOAT;
 
   std::shared_ptr<ChassisControllerPID> buildCCPID();
   std::shared_ptr<ChassisControllerIntegrated> buildCCI();

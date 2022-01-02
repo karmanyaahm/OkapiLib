@@ -7,6 +7,7 @@
 
 #include "okapi/api/chassis/controller/chassisController.hpp"
 #include "okapi/api/control/iterative/iterativePosPidController.hpp"
+#include "okapi/api/control/iterative/iterativeSlewController.hpp"
 #include "okapi/api/util/abstractRate.hpp"
 #include "okapi/api/util/logging.hpp"
 #include "okapi/api/util/timeUtil.hpp"
@@ -39,8 +40,8 @@ class ChassisControllerPID : public ChassisController {
     std::unique_ptr<IterativePosPIDController> iangleController,
     const AbstractMotor::GearsetRatioPair &igearset = AbstractMotor::gearset::green,
     const ChassisScales &iscales = ChassisScales({1, 1}, imev5GreenTPR),
-    std::shared_ptr<Logger> ilogger = Logger::getDefaultLogger());
-
+    std::shared_ptr<Logger> ilogger = Logger::getDefaultLogger(),
+    double slewdiff = MAXFLOAT);
   ChassisControllerPID(const ChassisControllerPID &) = delete;
   ChassisControllerPID(ChassisControllerPID &&other) = delete;
   ChassisControllerPID &operator=(const ChassisControllerPID &other) = delete;
@@ -232,6 +233,8 @@ class ChassisControllerPID : public ChassisController {
   std::shared_ptr<Logger> logger;
   bool normalTurns{true};
   std::shared_ptr<ChassisModel> chassisModel;
+  std::unique_ptr<IterativeSlewController> slewL;
+  std::unique_ptr<IterativeSlewController> slewR;
   TimeUtil timeUtil;
   std::unique_ptr<IterativePosPIDController> distancePid;
   std::unique_ptr<IterativePosPIDController> turnPid;

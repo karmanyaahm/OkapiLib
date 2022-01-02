@@ -286,8 +286,16 @@ ChassisControllerBuilder::withDimensions(const AbstractMotor::GearsetRatioPair &
 ChassisControllerBuilder &ChassisControllerBuilder::withMaxVelocity(const double imaxVelocity) {
   maxVelSetByUser = true;
   maxVelocity = imaxVelocity;
+
   return *this;
 }
+
+ChassisControllerBuilder &ChassisControllerBuilder::withSlewRate(double irate) {
+  slewRate = irate;
+  return *this;
+}
+
+
 
 ChassisControllerBuilder &ChassisControllerBuilder::withMaxVoltage(const double imaxVoltage) {
   maxVoltage = imaxVoltage;
@@ -414,7 +422,7 @@ ChassisControllerBuilder::buildDOCC(std::shared_ptr<ChassisController> chassisCo
 }
 
 std::shared_ptr<ChassisControllerPID> ChassisControllerBuilder::buildCCPID() {
-  if(differentOdomScales) {
+  if (differentOdomScales) {
     // The chassis controller is going to multiply by the gearset ratio, but
     // since the odometry wheels are directly driven, we need to back this out here
     odomScales.straight = odomScales.straight / gearset.ratio;
@@ -437,7 +445,8 @@ std::shared_ptr<ChassisControllerPID> ChassisControllerBuilder::buildCCPID() {
                                                 controllerLogger),
     gearset,
     odomScales,
-    controllerLogger);
+    controllerLogger,
+    slewRate);
 
   out->startThread();
 
