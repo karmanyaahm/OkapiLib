@@ -5,6 +5,7 @@
  */
 #include "okapi/api/chassis/controller/chassisControllerPid.hpp"
 #include "okapi/api/util/mathUtil.hpp"
+#include "okapi/api/odometry/odomMath.hpp"
 #include <cmath>
 #include <utility>
 
@@ -132,7 +133,7 @@ namespace okapi
           case swing::right:
             if (velocityMode)
             {
-              chassisModel->right(slewR->step(turnPid->getOutput()));
+              chassisModel->right(-slewR->step(turnPid->getOutput()));
             }
             else
             {
@@ -248,10 +249,9 @@ namespace okapi
     waitUntilSettled();
   }
 
-  void ChassisControllerPID::turnAngle(const QAngle idegTarget, swing s)
+  void ChassisControllerPID::setSwing(swing s)
   {
-    turnAngleAsync(idegTarget, s);
-    waitUntilSettled();
+    swingg = s;
   }
 
   void ChassisControllerPID::turnRaw(const double idegTarget)
