@@ -4,34 +4,39 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 #include "okapi/api/chassis/model/threeEncoderSkidSteerModel.hpp"
+#include "extreme_basic.hpp"
 
-namespace okapi {
-ThreeEncoderSkidSteerModel::ThreeEncoderSkidSteerModel(
-  std::shared_ptr<AbstractMotor> ileftSideMotor,
-  std::shared_ptr<AbstractMotor> irightSideMotor,
-  std::shared_ptr<ContinuousRotarySensor> ileftEnc,
-  std::shared_ptr<ContinuousRotarySensor> irightEnc,
-  std::shared_ptr<ContinuousRotarySensor> imiddleEnc,
-  const double imaxVelocity,
-  const double imaxVoltage)
-  : SkidSteerModel(std::move(ileftSideMotor),
-                   std::move(irightSideMotor),
-                   std::move(ileftEnc),
-                   std::move(irightEnc),
-                   imaxVelocity,
-                   imaxVoltage),
-    middleSensor(std::move(imiddleEnc)) {
-}
+namespace okapi
+{
+  ThreeEncoderSkidSteerModel::ThreeEncoderSkidSteerModel(
+      std::shared_ptr<AbstractMotor> ileftSideMotor,
+      std::shared_ptr<AbstractMotor> irightSideMotor,
+      std::shared_ptr<ContinuousRotarySensor> ileftEnc,
+      std::shared_ptr<ContinuousRotarySensor> irightEnc,
+      std::shared_ptr<ContinuousRotarySensor> imiddleEnc,
+      const double imaxVelocity,
+      const double imaxVoltage)
+      : SkidSteerModel(std::move(ileftSideMotor),
+                       std::move(irightSideMotor),
+                       std::move(ileftEnc),
+                       std::move(irightEnc),
+                       imaxVelocity,
+                       imaxVoltage),
+        middleSensor(std::move(imiddleEnc))
+  {
+  }
 
-std::valarray<std::int32_t> ThreeEncoderSkidSteerModel::getSensorVals() const {
-  // Return the middle sensor last so this is compatible with SkidSteerModel::getSensorVals()
-  return std::valarray<std::int32_t>{static_cast<std::int32_t>(leftSensor->get()),
-                                     static_cast<std::int32_t>(rightSensor->get()),
-                                     static_cast<std::int32_t>(middleSensor->get())};
-}
+  std::valarray<std::int32_t> ThreeEncoderSkidSteerModel::getSensorVals() const
+  {
+    // Return the middle sensor last so this is compatible with SkidSteerModel::getSensorVals()
+    return std::valarray<std::int32_t>{static_cast<std::int32_t>(leftSensor->get()),
+                                       static_cast<std::int32_t>(rightSensor->get()),
+                                       static_cast<std::int32_t>(middleSensor->get() * BASIC_CONSTS::GYRO_TIMES)};
+  }
 
-void ThreeEncoderSkidSteerModel::resetSensors() {
-  SkidSteerModel::resetSensors();
-  middleSensor->reset();
-}
+  void ThreeEncoderSkidSteerModel::resetSensors()
+  {
+    SkidSteerModel::resetSensors();
+    middleSensor->reset();
+  }
 } // namespace okapi

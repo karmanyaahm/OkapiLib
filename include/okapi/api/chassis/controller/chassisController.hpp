@@ -62,7 +62,7 @@ class ChassisController {
    * @param idegTarget angle to turn for
    */
   virtual void turnAngle(QAngle idegTarget) = 0;
-  virtual void turnAngle(QAngle idegTarget, swing s) = 0;
+  virtual void setSwing(swing s) = 0;
   /**
    * Turns the robot clockwise in place (using closed-loop control).
    *
@@ -76,7 +76,6 @@ class ChassisController {
    * @param idegTarget angle to turn for
    */
   virtual void turnAngleAsync(QAngle idegTarget) = 0;
-  virtual void turnAngleAsync(QAngle idegTarget, swing s) = 0;
 
   /**
    * Sets the target angle for the robot to turn clockwise in place (using closed-loop control).

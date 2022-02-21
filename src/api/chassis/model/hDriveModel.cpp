@@ -185,7 +185,7 @@ void HDriveModel::middle(const double ispeed) {
 std::valarray<std::int32_t> HDriveModel::getSensorVals() const {
   return std::valarray<std::int32_t>{static_cast<std::int32_t>(leftSensor->get()),
                                      static_cast<std::int32_t>(rightSensor->get()),
-                                     static_cast<std::int32_t>(middleSensor->get())};
+                                     static_cast<std::int32_t>(middleSensor->get() * 100.0)};
 }
 
 void HDriveModel::resetSensors() {

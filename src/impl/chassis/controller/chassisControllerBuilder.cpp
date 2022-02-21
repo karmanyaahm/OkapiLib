@@ -536,7 +536,7 @@ std::shared_ptr<SkidSteerModel> ChassisControllerBuilder::makeSkidSteerModel() {
                                             leftSensor,
                                             rightSensor,
                                             maxVelocity,
-                                            maxVoltage);
+                                            maxVoltage, middleSensor);
   }
 }
 

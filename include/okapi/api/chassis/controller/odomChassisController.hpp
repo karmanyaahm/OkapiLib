@@ -105,6 +105,8 @@ class OdomChassisController : public ChassisController {
    */
   virtual void setMoveThreshold(const QLength &imoveThreshold);
 
+
+  ChassisController &chassisController() ;
   /**
    * Set a new turn threshold. Any requested turns smaller than this threshold will be skipped.
    *

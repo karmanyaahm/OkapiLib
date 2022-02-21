@@ -61,6 +61,7 @@ class IMU : public ContinuousRotarySensor {
    * @return ``1`` or ``PROS_ERR``.
    */
   std::int32_t reset() override;
+  void setOffset(double o) ;
 
   /**
    * Calibrate the IMU. Resets the rotation value to zero. Calibration is expected to take two

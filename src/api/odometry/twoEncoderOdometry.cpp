@@ -7,6 +7,7 @@
 #include "okapi/api/units/QAngularSpeed.hpp"
 #include "okapi/api/util/mathUtil.hpp"
 #include <cmath>
+#include "extreme_basic.hpp"
 
 namespace okapi {
 TwoEncoderOdometry::TwoEncoderOdometry(const TimeUtil &itimeUtil,
@@ -36,7 +37,8 @@ void TwoEncoderOdometry::step() {
 
     state.x += newState.x;
     state.y += newState.y;
-    state.theta += newState.theta;
+    //state.theta += newState.theta;
+    state.theta = (newTicks[2] / BASIC_CONSTS::GYRO_TIMES) * 1_deg;
   }
 }
 

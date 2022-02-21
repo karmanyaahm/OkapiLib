@@ -82,6 +82,7 @@ namespace okapi
 
     auto angle = OdomMath::computeAngleToPoint(ipoint.inFT(defaultStateMode),
                                                odom->getState(StateMode::FRAME_TRANSFORMATION));
+printf("%f, %f\n", odom->getState(StateMode::FRAME_TRANSFORMATION).theta.convert(1_deg), angle.convert(1_deg));
     angle = OdomMath::constrainAngle180(angle);
 
     LOG_INFO("DefaultOdomChassisController: Computed angle of " +
@@ -136,9 +137,9 @@ namespace okapi
   {
     controller->turnAngle(idegTarget);
   }
-void DefaultOdomChassisController::turnAngle(QAngle idegTarget, swing s)
+void DefaultOdomChassisController::setSwing( swing s)
   {
-    controller->turnAngle(idegTarget, s);
+    controller->setSwing(s);
   }
   void DefaultOdomChassisController::turnRaw(double idegTarget)
   {
@@ -148,10 +149,6 @@ void DefaultOdomChassisController::turnAngle(QAngle idegTarget, swing s)
   void DefaultOdomChassisController::turnAngleAsync(QAngle idegTarget)
   {
     controller->turnAngleAsync(idegTarget);
-  }
-  void DefaultOdomChassisController::turnAngleAsync(QAngle idegTarget, swing s)
-  {
-    controller->turnAngleAsync(idegTarget, s);
   }
 
   void DefaultOdomChassisController::turnRawAsync(double idegTarget)

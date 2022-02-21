@@ -19,6 +19,7 @@ QLength OdomMath::computeDistanceToPoint(const Point &ipoint, const OdomState &i
 
 QAngle OdomMath::computeAngleToPoint(const Point &ipoint, const OdomState &istate) {
   const auto [xDiff, yDiff] = computeDiffs(ipoint, istate);
+  printf("%f, %f\n", xDiff, yDiff);
   return computeAngle(xDiff, yDiff, istate.theta.convert(radian)) * radian;
 }
 

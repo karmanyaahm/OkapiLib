@@ -8,6 +8,7 @@
 #include "okapi/api/odometry/odomMath.hpp"
 #include <cmath>
 #include <utility>
+#include "extreme_basic.hpp"
 
 namespace okapi
 {
@@ -75,6 +76,7 @@ namespace okapi
         if (mode != pastMode || newMovement.load(std::memory_order_acquire))
         {
           encStartVals = chassisModel->getSensorVals();
+          //printf(" START ============== %f\n", static_cast<double>(encStartVals[2]));
           newMovement.store(false, std::memory_order_release);
           slewL->reset();
           slewR->reset();
@@ -85,7 +87,7 @@ namespace okapi
         case distance:
           encVals = chassisModel->getSensorVals() - encStartVals;
           distanceElapsed = static_cast<double>((encVals[0] + encVals[1])) / 2.0;
-          angleChange = static_cast<double>(encVals[0] - encVals[1]);
+          angleChange = static_cast<double>(encVals[2]);
 
           distancePid->step(distanceElapsed);
           anglePid->step(angleChange);
@@ -103,7 +105,8 @@ namespace okapi
 
         case angle:
           encVals = chassisModel->getSensorVals() - encStartVals;
-          angleChange = (encVals[0] - encVals[1]) / 2.0;
+          angleChange = static_cast<double>(encVals[2]) ;
+          //printf("%f\n", angleChange);
 
           turnPid->step(angleChange);
           switch (swingg)
@@ -122,7 +125,7 @@ namespace okapi
           case swing::left:
             if (velocityMode)
             {
-              chassisModel->left(slewR->step(turnPid->getOutput()));
+              chassisModel->left(2*slewR->step(turnPid->getOutput()));
             }
             else
             {
@@ -133,7 +136,7 @@ namespace okapi
           case swing::right:
             if (velocityMode)
             {
-              chassisModel->right(-slewR->step(turnPid->getOutput()));
+              chassisModel->right(-2*slewR->step(turnPid->getOutput()));
             }
             else
             {
@@ -210,10 +213,6 @@ namespace okapi
   }
   void ChassisControllerPID::turnAngleAsync(const QAngle idegTarget)
   {
-    turnAngleAsync(idegTarget, swing::none);
-  }
-  void ChassisControllerPID::turnAngleAsync(const QAngle idegTarget, swing s)
-  {
     LOG_INFO("ChassisControllerPID: turning " + std::to_string(idegTarget.convert(degree)) +
              " degrees");
     LOG_DEBUG("ChassisControllerPID: scales.turn " + std::to_string(scales.turn) + " ratio " +
@@ -224,10 +223,9 @@ namespace okapi
     distancePid->flipDisable(true);
     anglePid->flipDisable(true);
     mode = angle;
-    swingg = s;
 
-    const double newTarget =
-        idegTarget.convert(degree) * scales.turn * gearsetRatioPair.ratio * boolToSign(normalTurns);
+    //const double newTarget =      idegTarget.convert(degree) * scales.turn * gearsetRatioPair.ratio * boolToSign(normalTurns);
+    const double newTarget = idegTarget.convert(degree) * boolToSign(normalTurns) * BASIC_CONSTS::GYRO_TIMES;
 
     LOG_INFO("ChassisControllerPID: turning " + std::to_string(newTarget) + " motor ticks");
 

@@ -11,14 +11,19 @@ IMU::IMU(const std::uint8_t iport, const IMUAxes iaxis) : port(iport), axis(iaxi
 }
 
 double IMU::get() const {
-  const double angle = readAngle();
+   double angle = pros::c::imu_get_rotation(port);
+  if (axis == IMUAxes::y) {
+    //this is the diff not the total
+    angle = pros::c::imu_get_pitch(port);
+  }
 
   if (angle == PROS_ERR) {
     return PROS_ERR;
   }
 
   // Account for the offset after checking for PROS_ERR
-  return OdomMath::constrainAngle180((angle - offset) * degree).convert(degree);
+  // printf("offset %f %f\n", angle, offset);
+  return (angle - offset);
 }
 
 double IMU::getRemapped(const double iupperBound, const double ilowerBound) const {
@@ -54,6 +59,9 @@ std::int32_t IMU::reset() {
   } else {
     return 1;
   }
+}
+void IMU::setOffset(double o) {
+  offset = -o;
 }
 
 std::int32_t IMU::calibrate() {
