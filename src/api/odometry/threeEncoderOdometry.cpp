@@ -6,6 +6,7 @@
 #include "okapi/api/odometry/threeEncoderOdometry.hpp"
 #include "okapi/api/units/QSpeed.hpp"
 #include <math.h>
+#include "extreme_basic.hpp"
 
 namespace okapi {
 ThreeEncoderOdometry::ThreeEncoderOdometry(const TimeUtil &itimeUtil,
@@ -39,21 +40,20 @@ OdomState ThreeEncoderOdometry::odomMathStep(const std::valarray<std::int32_t> &
   const double deltaL = itickDiff[0] / chassisScales.straight;
   const double deltaR = itickDiff[1] / chassisScales.straight;
 
-  double deltaTheta = (deltaL - deltaR) / chassisScales.wheelTrack.convert(meter);
+  // typical dela theta
+  // double deltaTheta = (deltaL - deltaR) / chassisScales.wheelTrack.convert(meter);
+  //  my gyro based delta theta
+  double deltaTheta = state.theta.convert(radian);
+
   double localOffX, localOffY;
 
-  const auto deltaM = static_cast<const double>(
-    itickDiff[2] / chassisScales.middle -
-    ((deltaTheta / 2_pi) * 1_pi * chassisScales.middleWheelDistance.convert(meter) * 2));
-
-  if (deltaL == deltaR) {
-    localOffX = deltaM;
-    localOffY = deltaR;
-  } else {
-    localOffX = 2 * std::sin(deltaTheta / 2) *
-                (deltaM / deltaTheta + chassisScales.middleWheelDistance.convert(meter) * 2);
+  if (deltaTheta != 0) {
+    localOffX = 2 * std::sin(deltaTheta / 2) * chassisScales.middleWheelDistance.convert(meter);
     localOffY = 2 * std::sin(deltaTheta / 2) *
                 (deltaR / deltaTheta + chassisScales.wheelTrack.convert(meter) / 2);
+  } else {
+    localOffX = 0;
+    localOffY = deltaR;
   }
 
   double avgA = state.theta.convert(radian) + (deltaTheta / 2);
