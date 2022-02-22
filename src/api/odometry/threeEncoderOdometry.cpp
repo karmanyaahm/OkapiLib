@@ -4,9 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 #include "okapi/api/odometry/threeEncoderOdometry.hpp"
+#include "extreme_basic.hpp"
 #include "okapi/api/units/QSpeed.hpp"
 #include <math.h>
-#include "extreme_basic.hpp"
 
 namespace okapi {
 ThreeEncoderOdometry::ThreeEncoderOdometry(const TimeUtil &itimeUtil,
@@ -43,7 +43,7 @@ OdomState ThreeEncoderOdometry::odomMathStep(const std::valarray<std::int32_t> &
   // typical dela theta
   // double deltaTheta = (deltaL - deltaR) / chassisScales.wheelTrack.convert(meter);
   //  my gyro based delta theta
-  double deltaTheta = state.theta.convert(radian);
+  double deltaTheta = ((newTicks[2] / BASIC_CONSTS::GYRO_TIMES) * 1_deg).convert(radian);
 
   double localOffX, localOffY;
 

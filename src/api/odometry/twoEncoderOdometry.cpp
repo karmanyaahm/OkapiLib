@@ -33,12 +33,12 @@ void TwoEncoderOdometry::step() {
     tickDiff = newTicks - lastTicks;
     lastTicks = newTicks;
 
-    state.theta = (newTicks[2] / BASIC_CONSTS::GYRO_TIMES) * 1_deg;
     const auto newState = odomMathStep(tickDiff, deltaT);
 
     state.x += newState.x;
     state.y += newState.y;
     //state.theta += newState.theta;
+    state.theta = (newTicks[2] / BASIC_CONSTS::GYRO_TIMES) * 1_deg;
   }
 }
 
