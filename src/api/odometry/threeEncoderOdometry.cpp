@@ -43,7 +43,7 @@ OdomState ThreeEncoderOdometry::odomMathStep(const std::valarray<std::int32_t> &
   // typical dela theta
   // double deltaTheta = (deltaL - deltaR) / chassisScales.wheelTrack.convert(meter);
   //  my gyro based delta theta
-  double deltaTheta = ((newTicks[2] / BASIC_CONSTS::GYRO_TIMES) * 1_deg).convert(radian);
+  double deltaTheta = ((itickDiff[2] / BASIC_CONSTS::GYRO_TIMES) * 1_deg).convert(radian);
 
   double localOffX, localOffY;
 
