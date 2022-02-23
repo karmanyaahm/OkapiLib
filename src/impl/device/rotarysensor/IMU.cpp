@@ -14,7 +14,7 @@ double IMU::get() const {
    double angle = pros::c::imu_get_rotation(port);
   if (axis == IMUAxes::y) {
     //this is the diff not the total
-    angle = pros::c::imu_get_pitch(port);
+    angle = pros::c::imu_get_roll(port);
   }
 
   if (angle == PROS_ERR) {
