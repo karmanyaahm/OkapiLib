@@ -153,6 +153,11 @@ namespace okapi
 
         pastMode = mode;
       }
+      static int count = 0;
+      count++;
+      if (count % 25) {
+	      printf("CHASSIS PID ERRORS: %f %f - %f %f - %f %f\n", distancePid->getProcessValue(), distancePid->getOutput(), anglePid->getProcessValue(), anglePid->getOutput(), turnPid->getProcessValue(), turnPid->getOutput()); 
+      }
 
       rate->delayUntil(threadSleepTime);
     }
