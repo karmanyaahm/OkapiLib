@@ -432,6 +432,7 @@ class ChassisControllerBuilder {
    */
   std::shared_ptr<OdomChassisController> buildOdometry();
 
+  bool differentOdomScales{false};
   private:
   std::shared_ptr<Logger> logger;
 
@@ -479,7 +480,6 @@ class ChassisControllerBuilder {
 
   AbstractMotor::GearsetRatioPair gearset{AbstractMotor::gearset::invalid,1.0};
   ChassisScales driveScales{{1, 1}, imev5GreenTPR};
-  bool differentOdomScales{false};
   ChassisScales odomScales{{1, 1}, imev5GreenTPR};
   std::shared_ptr<Logger> controllerLogger = Logger::getDefaultLogger();
 

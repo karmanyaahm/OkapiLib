@@ -15,9 +15,9 @@ namespace okapi
   ChassisControllerPID::ChassisControllerPID(
       TimeUtil itimeUtil,
       std::shared_ptr<ChassisModel> ichassisModel,
-      std::unique_ptr<IterativePosPIDController> idistanceController,
-      std::unique_ptr<IterativePosPIDController> iturnController,
-      std::unique_ptr<IterativePosPIDController> iangleController,
+      std::shared_ptr<IterativePosPIDController> idistanceController,
+      std::shared_ptr<IterativePosPIDController> iturnController,
+      std::shared_ptr<IterativePosPIDController> iangleController,
       const AbstractMotor::GearsetRatioPair &igearset,
       const ChassisScales &iscales,
       std::shared_ptr<Logger> ilogger,
@@ -155,8 +155,8 @@ namespace okapi
       }
       static int count = 0;
       count++;
-      if (count % 25) {
-	      printf("CHASSIS PID ERRORS: %f %f - %f %f - %f %f\n", distancePid->getProcessValue(), distancePid->getOutput(), anglePid->getProcessValue(), anglePid->getOutput(), turnPid->getProcessValue(), turnPid->getOutput()); 
+      if (!(count % 25)) {
+	      //printf("CHASSIS PID ERRORS: %f %f - %f %f - %f %f\n", distancePid->getError(), distancePid->getOutput(), anglePid->getError(), anglePid->getOutput(), turnPid->getError(), turnPid->getOutput()); 
       }
 
       rate->delayUntil(threadSleepTime);

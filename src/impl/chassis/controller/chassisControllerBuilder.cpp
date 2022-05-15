@@ -295,8 +295,6 @@ ChassisControllerBuilder &ChassisControllerBuilder::withSlewRate(double irate) {
   return *this;
 }
 
-
-
 ChassisControllerBuilder &ChassisControllerBuilder::withMaxVoltage(const double imaxVoltage) {
   maxVoltage = imaxVoltage;
   return *this;
@@ -425,26 +423,28 @@ std::shared_ptr<ChassisControllerPID> ChassisControllerBuilder::buildCCPID() {
   if (differentOdomScales) {
     // The chassis controller is going to multiply by the gearset ratio, but
     // since the odometry wheels are directly driven, we need to back this out here
-    odomScales.straight = odomScales.straight / gearset.ratio;
-    odomScales.turn = odomScales.turn / gearset.ratio;
   }
+  auto mycopyodomscales = odomScales;
+  mycopyodomscales.straight = odomScales.straight / gearset.ratio;
+  mycopyodomscales.turn = odomScales.turn / gearset.ratio;
+
   auto out = std::make_shared<ChassisControllerPID>(
     chassisControllerTimeUtilFactory.create(),
     makeChassisModel(),
-    std::make_unique<IterativePosPIDController>(distanceGains,
+    std::make_shared<IterativePosPIDController>(distanceGains,
                                                 closedLoopControllerTimeUtilFactory.create(),
                                                 std::move(distanceFilter),
                                                 controllerLogger),
-    std::make_unique<IterativePosPIDController>(turnGains,
+    std::make_shared<IterativePosPIDController>(turnGains,
                                                 closedLoopControllerTimeUtilFactory.create(),
                                                 std::move(turnFilter),
                                                 controllerLogger),
-    std::make_unique<IterativePosPIDController>(angleGains,
+    std::make_shared<IterativePosPIDController>(angleGains,
                                                 closedLoopControllerTimeUtilFactory.create(),
                                                 std::move(angleFilter),
                                                 controllerLogger),
     gearset,
-    odomScales,
+    mycopyodomscales,
     controllerLogger,
     slewRate);
 
@@ -486,16 +486,18 @@ std::shared_ptr<ChassisControllerIntegrated> ChassisControllerBuilder::buildCCI(
   return std::make_shared<ChassisControllerIntegrated>(
     chassisControllerTimeUtilFactory.create(),
     makeChassisModel(),
-    std::make_unique<AsyncPosIntegratedController>(leftMotorGroup,
-                                                   AbstractMotor::GearsetRatioPair(gearset.internalGearset, 1.0),
-                                                   maxVelocity,
-                                                   closedLoopControllerTimeUtilFactory.create(),
-                                                   controllerLogger),
-    std::make_unique<AsyncPosIntegratedController>(rightMotorGroup,
-                                                   AbstractMotor::GearsetRatioPair(gearset.internalGearset, 1.0),
-                                                   maxVelocity,
-                                                   closedLoopControllerTimeUtilFactory.create(),
-                                                   controllerLogger),
+    std::make_unique<AsyncPosIntegratedController>(
+      leftMotorGroup,
+      AbstractMotor::GearsetRatioPair(gearset.internalGearset, 1.0),
+      maxVelocity,
+      closedLoopControllerTimeUtilFactory.create(),
+      controllerLogger),
+    std::make_unique<AsyncPosIntegratedController>(
+      rightMotorGroup,
+      AbstractMotor::GearsetRatioPair(gearset.internalGearset, 1.0),
+      maxVelocity,
+      closedLoopControllerTimeUtilFactory.create(),
+      controllerLogger),
     gearset,
     driveScales,
     controllerLogger);
@@ -536,7 +538,8 @@ std::shared_ptr<SkidSteerModel> ChassisControllerBuilder::makeSkidSteerModel() {
                                             leftSensor,
                                             rightSensor,
                                             maxVelocity,
-                                            maxVoltage, middleSensor);
+                                            maxVoltage,
+                                            middleSensor);
   }
 }
 

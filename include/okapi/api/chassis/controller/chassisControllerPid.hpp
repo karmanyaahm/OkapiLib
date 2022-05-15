@@ -37,9 +37,9 @@ namespace okapi
     ChassisControllerPID(
         TimeUtil itimeUtil,
         std::shared_ptr<ChassisModel> imodel,
-        std::unique_ptr<IterativePosPIDController> idistanceController,
-        std::unique_ptr<IterativePosPIDController> iturnController,
-        std::unique_ptr<IterativePosPIDController> iangleController,
+        std::shared_ptr<IterativePosPIDController> idistanceController,
+        std::shared_ptr<IterativePosPIDController> iturnController,
+        std::shared_ptr<IterativePosPIDController> iangleController,
         const AbstractMotor::GearsetRatioPair &igearset = AbstractMotor::gearset::green,
         const ChassisScales &iscales = ChassisScales({1, 1}, imev5GreenTPR),
         std::shared_ptr<Logger> ilogger = Logger::getDefaultLogger(),
@@ -232,6 +232,9 @@ namespace okapi
      * @return The internal ChassisModel.
      */
     ChassisModel &model() override;
+std::shared_ptr<IterativePosPIDController> distancePid;
+    std::shared_ptr<IterativePosPIDController> turnPid;
+    std::shared_ptr<IterativePosPIDController> anglePid;
 
   protected:
     std::shared_ptr<Logger> logger;
@@ -240,9 +243,7 @@ namespace okapi
     std::unique_ptr<IterativeSlewController> slewL;
     std::unique_ptr<IterativeSlewController> slewR;
     TimeUtil timeUtil;
-    std::unique_ptr<IterativePosPIDController> distancePid;
-    std::unique_ptr<IterativePosPIDController> turnPid;
-    std::unique_ptr<IterativePosPIDController> anglePid;
+    
     ChassisScales scales;
     AbstractMotor::GearsetRatioPair gearsetRatioPair;
     bool velocityMode{true};
