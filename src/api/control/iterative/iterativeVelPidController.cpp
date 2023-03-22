@@ -87,7 +87,7 @@ double IterativeVelPIDController::step(const double inewReading) {
       // Derivative over measurement to eliminate derivative kick on setpoint change
       derivative = derivativeFilter->filter(velMath->getAccel().getValue());
 
-      outputSum += kP * error - kD * derivative;
+      outputSum = kP * error - kD * derivative;
       outputSum = std::clamp(outputSum, outputMin, outputMax);
 
       loopDtTimer->clearHardMark(); // Important that we only clear if dt >= sampleTime
